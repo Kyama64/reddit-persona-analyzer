@@ -1,6 +1,6 @@
 # Reddit Persona Analyzer
 
-A Python tool that analyzes a Reddit user's profile to create a detailed persona based on their comments and posts, with export to text files.
+A Python tool that analyzes a Reddit user's profile to create a detailed persona based on their comments and posts, with export to Excel and Google Sheets.
 
 ## Features
 
@@ -10,7 +10,7 @@ A Python tool that analyzes a Reddit user's profile to create a detailed persona
 - Shows activity levels and engagement
 - Identifies most active subreddits
 - Generates a summary persona with emoji visualization
-- Exports analysis to well-formatted text files
+- Exports analysis to professionally formatted Excel (.xlsx) files
 - Optional Google Sheets export (requires setup)
 
 ## Prerequisites
@@ -65,20 +65,33 @@ When prompted, enter a Reddit profile URL (e.g., `https://www.reddit.com/user/us
 
 ### Command Line Arguments
 - `username`: The Reddit username to analyze (positional argument, required)
-- `--export`: Export the analysis to Google Sheets (requires Google Sheets API setup)
-- `--spreadsheet-id`: The ID of the Google Sheet to update (required with --export)
-- `--excel`: Export analysis to a text file (default export format)
-
-Examples:
-```bash
-# Basic analysis with text file export (default)
 python reddit_persona.py username
+```
 
-# Same as above, explicitly requesting text export
+### Export Options
+
+Export to Excel (.xlsx) file:
+```bash
 python reddit_persona.py username --excel
+```
 
-# Export to Google Sheets (requires setup)
-python reddit_persona.py username --export --spreadsheet-id YOUR_SPREADSHEET_ID
+The Excel file will be saved in the `exports` directory with a timestamped filename.
+
+Export to Google Sheets (requires setup):
+```bash
+python reddit_persona.py username --export
+```
+
+Specify a Google Sheet ID:
+```bash
+python reddit_persona.py username --export --spreadsheet-id your_sheet_id_here
+```
+
+### Multiple Usernames
+
+You can analyze multiple usernames by separating them with spaces:
+```bash
+python reddit_persona.py username1 username2 username3
 ```
 
 ## Example Output
@@ -107,23 +120,23 @@ The script will provide a detailed analysis including:
 - `google-auth-httplib2` - Google Authentication Library (for Google Sheets export, optional)
 - `google-auth-oauthlib` - Google OAuth Library (for Google Sheets export, optional)
 
-## Export Options
+## Output
 
-### Text File Export (Default)
-By default, the tool exports the analysis to a well-formatted text file in the `exports` directory. The file includes:
+The tool will display the analysis in the console and save it to a professionally formatted Excel (.xlsx) file in the `exports` directory if the `--excel` flag is used. The output includes:
 
 - Basic user information
-- Personality traits and archetype
+- Personality and archetype analysis
+- Sentiment analysis
 - Motivations and goals
 - Behaviors and habits
-- Frustrations
-- Activity summary with visual indicators
-- Most active subreddits with interaction counts
+- Activity summary
+- Most active subreddits
 
-Files are named with the pattern: `reddit_persona_[username]_[timestamp].txt`
-
-### Google Sheets Export (Optional)
-The tool can also export to Google Sheets if you set up the Google Sheets API. The export includes the same information as the text file export.
+Excel files include:
+- Proper formatting and styling
+- Color-coded sections
+- Auto-adjusted column widths
+- Text wrapping for better readability
 
 To enable Google Sheets export:
 1. Set up the Google Sheets API as described in the Prerequisites section

@@ -1179,15 +1179,6 @@ def main():
                     print(f"\n Data exported to Excel: {os.path.abspath(excel_file)}")
                 except Exception as e:
                     print(f"\n Error exporting to Excel: {str(e)}")
-                    # Fallback to basic text export if Excel fails
-                    try:
-                        os.makedirs('exports', exist_ok=True)
-                        filename = os.path.join('exports', f"reddit_persona_{user_input}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
-                        with open(filename, 'w', encoding='utf-8') as f:
-                            json.dump(persona_data, f, indent=2, ensure_ascii=False)
-                        print(f" Data exported to JSON: {os.path.abspath(filename)}")
-                    except Exception as e2:
-                        print(f" Failed to export persona: {str(e2)}")
             
             if args.export or args.spreadsheet_id:
                 print("\n" + "="*50)
@@ -1204,21 +1195,12 @@ def main():
                     if sheet_url:
                         print(f"✅ Data exported to Google Sheets: {sheet_url}")
                     else:
-                        print("❌ Failed to export to Google Sheets. Falling back to CSV export.")
-                        export_to_csv(user_input, persona_data)
+                        print("❌ Failed to export to Google Sheets.")
                 else:
-                    print("Google Sheets export not available. Falling back to CSV export.")
-                    export_to_csv(user_input, persona_data)
-            
-            # Always offer CSV export if not already done
-            elif args.csv or (not args.export and not args.spreadsheet_id):
-                print("\n" + "="*50)
-                print("EXPORT OPTIONS")
-                print("="*50)
-                export_to_csv(user_input, persona_data)
+                    print("Google Sheets export not available.")
             
             # Exit if username was provided as command line argument
-            if len(sys.argv) > 1 and not any(opt in sys.argv[1:] for opt in ['--export', '--spreadsheet-id', '--csv']):
+            if len(sys.argv) > 1 and not any(opt in sys.argv[1:] for opt in ['--export', '--spreadsheet-id']):
                 break
                 
     except KeyboardInterrupt:

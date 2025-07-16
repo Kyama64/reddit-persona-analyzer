@@ -1,22 +1,23 @@
 # Changelog
 All notable changes to the Reddit Persona Analyzer project will be documented in this file.
 
-## [1.1.0] - 2025-07-16
+## [1.2.0] - 2025-07-16
+### Added
+- Added professional Excel (.xlsx) export with proper formatting
+- Implemented cell styling, colors, and auto-adjusting column widths
+- Added automatic file opening after export
+- Created dedicated exports directory for generated files
+
 ### Changed
-- Replaced Excel/CSV export with a more reliable text file export
-- Improved file export formatting with better section headers and visual elements
-- Updated dependencies and removed unused packages
-- Enhanced .gitignore to better handle temporary and sensitive files
-- Updated README.md with new export options and clearer instructions
+- Removed CSV export functionality completely
+- Improved error handling for export operations
+- Updated .gitignore to exclude exports directory
+- Enhanced README.md with new Excel export instructions
 
 ### Fixed
-- Resolved issues with file encoding and formatting
-- Fixed command-line argument handling for export options
-- Improved error handling for file operations
-
-### Removed
-- Removed direct Excel/CSV export dependencies in favor of simpler text export
-- Removed duplicate dependencies from requirements.txt
+- Resolved 'Namespace' object has no attribute 'csv' error
+- Fixed command-line argument parsing for export options
+- Improved file handling and cleanup
 
 ## [1.0.0] - 2025-01-01
 ### Added
