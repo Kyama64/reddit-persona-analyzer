@@ -936,9 +936,12 @@ class RedditPersonaAnalyzer:
         return persona_data
 
 def export_to_excel(username, persona_data):
-    """Export persona data to a simple text file"""
+    """Export persona data to an Excel file with proper formatting"""
+    import pandas as pd
     from datetime import datetime
     import os
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.utils import get_column_letter
     
     try:
         # Create output directory if it doesn't exist
@@ -946,91 +949,146 @@ def export_to_excel(username, persona_data):
         
         # Create a filename with timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"reddit_persona_{username}_{timestamp}.txt"
+        filename = f"reddit_persona_{username}_{timestamp}.xlsx"
         filepath = os.path.abspath(os.path.join('exports', filename))
         
-        # Create the content string
-        content = []
-        
-        # Add title
-        content.append(f"Reddit Persona Analysis - u/{username}\n")
-        
-        # Add basic information
-        content.append("🔹 BASIC INFORMATION")
-        content.append(f"Username: u/{username}")
-        content.append(f"Age: {str(persona_data.get('age', 'N/A'))}")
-        content.append(f"Location: {str(persona_data.get('location', 'N/A'))}")
-        content.append(f"Occupation: {str(persona_data.get('occupation', 'N/A'))}")
-        content.append(f"Relationship Status: {str(persona_data.get('marriage_status', 'N/A'))}\n")
-        
-        # Add personality section
-        content.append("🧠 PERSONALITY & ARCHETYPE")
-        content.append(f"Archetype: {str(persona_data.get('archetype', 'N/A'))}")
-        content.append(f"Personality: {str(persona_data.get('personality', 'N/A'))}\n")
-        
-        # Add motivations
-        motivations = persona_data.get('motivations', [])
-        if motivations:
-            content.append("💡 MOTIVATIONS")
-            for i, (motivation, _) in enumerate(motivations, 1):
-                content.append(f"{i}. {str(motivation)}")
-            content.append("")  # Empty line
-        
-        # Add goals
-        goals = persona_data.get('goals', [])
-        if goals:
-            content.append("🎯 GOALS & NEEDS")
-            for i, (goal, _) in enumerate(goals, 1):
-                content.append(f"{i}. {str(goal)}")
-            content.append("")  # Empty line
-        
-        # Add behaviors
-        behaviors = persona_data.get('behaviors', [])
-        if behaviors:
-            content.append("📝 BEHAVIORS & HABITS")
-            for i, (behavior, _) in enumerate(behaviors, 1):
-                content.append(f"{i}. {str(behavior)}")
-            content.append("")  # Empty line
-        
-        # Add frustrations
-        frustrations = persona_data.get('frustrations', [])
-        if frustrations:
-            content.append("😡 FRUSTRATIONS")
-            for i, (frustration, _) in enumerate(frustrations, 1):
-                content.append(f"{i}. {str(frustration)}")
-            content.append("")  # Empty line
-        
-        # Add activity summary
-        content.append("📊 ACTIVITY SUMMARY")
-        content.append(f"Activity Level: {str(persona_data.get('activity_level', 'N/A'))}")
-        content.append(f"Total Comments: {str(persona_data.get('total_comments', 0))}")
-        content.append(f"Total Posts: {str(persona_data.get('total_posts', 0))}\n")
-        
-        # Add top subreddits if available
-        if 'top_subreddits' in persona_data and persona_data['top_subreddits']:
-            content.append("🏆 TOP SUBREDDITS")
-            for i, sub in enumerate(persona_data['top_subreddits'], 1):
-                if isinstance(sub, dict):
-                    sub_name = sub.get('subreddit', 'N/A')
-                    count = sub.get('count', 0)
-                    content.append(f"{i}. r/{sub_name} - {count} interactions")
-                else:
-                    content.append(f"{i}. r/{sub}")
-        
-        # Write to file
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(content))
+        # Create a Pandas Excel writer using openpyxl
+        with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+            # Create a workbook and add a worksheet
+            workbook = writer.book
+            worksheet = workbook.create_sheet("Persona Analysis")
+            
+            # Define styles
+            header_font = Font(bold=True, color="FFFFFF")
+            header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+            section_font = Font(bold=True, size=12, color="1F4E78")
+            border = Border(
+                left=Side(style='thin'),
+                right=Side(style='thin'),
+                top=Side(style='thin'),
+                bottom=Side(style='thin')
+            )
+            
+            # Start row counter
+            row = 1
+            
+            # Add title
+            title = f"Reddit Persona Analysis - u/{username}"
+            worksheet.append([title])
+            worksheet.merge_cells(f'A{row}:B{row}')
+            worksheet[f'A{row}'].font = Font(size=14, bold=True, color="1F4E78")
+            worksheet[f'A{row}'].alignment = Alignment(horizontal='center')
+            row += 2
+            
+            # Function to add a section
+            def add_section(title):
+                nonlocal row
+                worksheet.append([title])
+                worksheet.merge_cells(f'A{row}:B{row}')
+                worksheet[f'A{row}'].font = section_font
+                worksheet[f'A{row}'].fill = PatternFill(start_color="DCE6F1", end_color="DCE6F1", fill_type="solid")
+                row += 1
+            
+            # Function to add key-value pairs
+            def add_kv(key, value):
+                nonlocal row
+                worksheet.append([key, value])
+                worksheet[f'A{row}'].font = Font(bold=True)
+                worksheet[f'B{row}'].alignment = Alignment(wrap_text=True, vertical='top')
+                row += 1
+            
+            # Add basic information
+            add_section("🔹 BASIC INFORMATION")
+            add_kv("Username:", f"u/{username}")
+            add_kv("Age:", str(persona_data.get('age', 'N/A')))
+            add_kv("Location:", str(persona_data.get('location', 'N/A')))
+            add_kv("Occupation:", str(persona_data.get('occupation', 'N/A')))
+            add_kv("Relationship Status:", str(persona_data.get('marriage_status', 'N/A')))
+            row += 1  # Add empty row
+            
+            # Add personality section
+            add_section("🧠 PERSONALITY & ARCHETYPE")
+            add_kv("Archetype:", str(persona_data.get('archetype', 'N/A')))
+            add_kv("Personality:", str(persona_data.get('personality', 'N/A')))
+            row += 1
+            
+            # Add motivations
+            motivations = persona_data.get('motivations', [])
+            if motivations:
+                add_section("💡 MOTIVATIONS")
+                for i, (motivation, _) in enumerate(motivations, 1):
+                    add_kv(f"{i}.", str(motivation))
+                row += 1
+            
+            # Add goals
+            goals = persona_data.get('goals', [])
+            if goals:
+                add_section("🎯 GOALS & NEEDS")
+                for i, (goal, _) in enumerate(goals, 1):
+                    add_kv(f"{i}.", str(goal))
+                row += 1
+            
+            # Add behaviors
+            behaviors = persona_data.get('behaviors', [])
+            if behaviors:
+                add_section("📝 BEHAVIORS & HABITS")
+                for i, (behavior, _) in enumerate(behaviors, 1):
+                    add_kv(f"{i}.", str(behavior))
+                row += 1
+            
+            # Add frustrations
+            frustrations = persona_data.get('frustrations', [])
+            if frustrations:
+                add_section("😡 FRUSTRATIONS")
+                for i, (frustration, _) in enumerate(frustrations, 1):
+                    add_kv(f"{i}.", str(frustration))
+                row += 1
+            
+            # Add activity summary
+            add_section("📊 ACTIVITY SUMMARY")
+            add_kv("Activity Level:", str(persona_data.get('activity_level', 'N/A')))
+            add_kv("Total Comments:", str(persona_data.get('total_comments', 0)))
+            add_kv("Total Posts:", str(persona_data.get('total_posts', 0)))
+            
+            # Add top subreddits if available
+            if 'top_subreddits' in persona_data and persona_data['top_subreddits']:
+                add_section("🏆 TOP SUBREDDITS")
+                for i, sub in enumerate(persona_data['top_subreddits'], 1):
+                    if isinstance(sub, dict):
+                        sub_name = sub.get('subreddit', 'N/A')
+                        count = sub.get('count', 0)
+                        add_kv(f"{i}. r/{sub_name}", f"{count} interactions")
+                    else:
+                        add_kv(f"{i}.", f"r/{sub}")
+            
+            # Adjust column widths
+            for column_cells in worksheet.columns:
+                length = max(len(str(cell.value)) for cell in column_cells)
+                worksheet.column_dimensions[get_column_letter(column_cells[0].column)].width = min(length + 2, 50)
+            
+            # Apply borders to all cells
+            for row_cells in worksheet.iter_rows():
+                for cell in row_cells:
+                    cell.border = border
+            
+            # Remove the default sheet created by pandas
+            if 'Sheet' in workbook.sheetnames:
+                std = workbook['Sheet']
+                workbook.remove(std)
+            
+            # Save the workbook
+            workbook.save(filepath)
         
         # Verify the file was created
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-            print(f"\n✅ Text file created successfully: {filepath}")
+            print(f"\n✅ Excel file created successfully: {filepath}")
             try:
-                # Try to open with default text editor
+                # Try to open with default application
                 if os.name == 'nt':  # Windows
-                    os.system(f'notepad "{filepath}"')
+                    os.startfile(filepath)
                 elif os.name == 'posix':  # macOS and Linux
                     if sys.platform == 'darwin':
-                        os.system(f'open -e "{filepath}"')
+                        os.system(f'open "{filepath}"')
                     else:
                         os.system(f'xdg-open "{filepath}"')
             except Exception as e:
@@ -1038,7 +1096,7 @@ def export_to_excel(username, persona_data):
                 print("Please open the file manually from the exports folder.")
             return filepath
         else:
-            raise Exception("Failed to create text file: File is empty or not created")
+            raise Exception("Failed to create Excel file: File is empty or not created")
             
     except Exception as e:
         # Clean up if file creation failed
