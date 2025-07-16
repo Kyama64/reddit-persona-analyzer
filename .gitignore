@@ -18,6 +18,29 @@ var/
 wheels/
 *.egg-info/
 .installed.cfg
+
+# Data files
+*.csv
+*.xlsx
+*.xls
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+
+# API keys and credentials
+*credentials*.json
+*secrets*.json
+*.pem
+
+# Logs
+*.log
+
+# Output directories
+output/
+data/
+results/
 *.egg
 
 # Environment variables
