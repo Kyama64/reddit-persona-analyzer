@@ -1,0 +1,13 @@
+praw>=7.7.0
+nltk>=3.8.1
+python-dotenv>=0.21.0
+vaderSentiment>=3.3.2
+google-api-python-client>=2.86.0
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=1.0.0
+gspread>=5.7.20
+google-api-python-client==2.108.0
+google-auth-httplib2==0.1.1
+google-auth-oauthlib==1.1.0
+gspread==5.10.0
+oauth2client==4.1.3
