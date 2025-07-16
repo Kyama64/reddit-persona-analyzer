@@ -1,6 +1,6 @@
 # Reddit Persona Analyzer
 
-A Python tool that analyzes a Reddit user's profile to create a detailed persona based on their comments and posts, with optional export to Google Sheets.
+A Python tool that analyzes a Reddit user's profile to create a detailed persona based on their comments and posts, with export to text files.
 
 ## Features
 
@@ -9,8 +9,9 @@ A Python tool that analyzes a Reddit user's profile to create a detailed persona
 - Identifies most common words and topics
 - Shows activity levels and engagement
 - Identifies most active subreddits
-- Generates a summary persona
-- Exports analysis to Google Sheets (optional)
+- Generates a summary persona with emoji visualization
+- Exports analysis to well-formatted text files
+- Optional Google Sheets export (requires setup)
 
 ## Prerequisites
 
@@ -66,18 +67,18 @@ When prompted, enter a Reddit profile URL (e.g., `https://www.reddit.com/user/us
 - `username`: The Reddit username to analyze (positional argument, required)
 - `--export`: Export the analysis to Google Sheets (requires Google Sheets API setup)
 - `--spreadsheet-id`: The ID of the Google Sheet to update (required with --export)
-- `--csv`: Export analysis to a CSV file instead of Google Sheets
+- `--excel`: Export analysis to a text file (default export format)
 
 Examples:
 ```bash
-# Basic analysis (no export)
+# Basic analysis with text file export (default)
 python reddit_persona.py username
 
-# Export to Google Sheets
-python reddit_persona.py username --export --spreadsheet-id YOUR_SPREADSHEET_ID
+# Same as above, explicitly requesting text export
+python reddit_persona.py username --excel
 
-# Export to CSV
-python reddit_persona.py username --csv
+# Export to Google Sheets (requires setup)
+python reddit_persona.py username --export --spreadsheet-id YOUR_SPREADSHEET_ID
 ```
 
 ## Example Output
@@ -100,21 +101,29 @@ The script will provide a detailed analysis including:
 - `praw` - Python Reddit API Wrapper
 - `nltk` - Natural Language Toolkit for text processing
 - `python-dotenv` - Loads environment variables from .env file
-- `google-api-python-client` - Google API Client Library for Python (for Google Sheets export)
-- `google-auth-httplib2` - Google Authentication Library (for Google Sheets export)
-- `google-auth-oauthlib` - Google OAuth Library (for Google Sheets export)
+- `pandas` - Data manipulation and analysis
+- `openpyxl` - Excel file support (used by pandas)
+- `google-api-python-client` - Google API Client Library for Python (for Google Sheets export, optional)
+- `google-auth-httplib2` - Google Authentication Library (for Google Sheets export, optional)
+- `google-auth-oauthlib` - Google OAuth Library (for Google Sheets export, optional)
 
-## Google Sheets Export
+## Export Options
 
-The tool can export the analysis to a Google Sheet if you set up the Google Sheets API. The export includes:
+### Text File Export (Default)
+By default, the tool exports the analysis to a well-formatted text file in the `exports` directory. The file includes:
 
 - Basic user information
 - Personality traits and archetype
 - Motivations and goals
 - Behaviors and habits
 - Frustrations
-- Activity summary
-- Most active subreddits
+- Activity summary with visual indicators
+- Most active subreddits with interaction counts
+
+Files are named with the pattern: `reddit_persona_[username]_[timestamp].txt`
+
+### Google Sheets Export (Optional)
+The tool can also export to Google Sheets if you set up the Google Sheets API. The export includes the same information as the text file export.
 
 To enable Google Sheets export:
 1. Set up the Google Sheets API as described in the Prerequisites section

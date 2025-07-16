@@ -5,6 +5,7 @@ import sys
 import json
 import nltk
 import logging
+import openpyxl
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -318,13 +319,15 @@ class RedditPersonaAnalyzer:
             print("\nGenerating persona summary...")
             try:
                 persona = self.generate_persona_summary(username, comments, posts, avg_sentiment)
-                print(f"Persona generated: {bool(persona)}")
-                if persona:
-                    print(f"Persona keys: {list(persona.keys())}")
                 
                 if not persona:
-                    print(f"Failed to generate persona for u/{username}: generate_persona_summary returned None")
+                    print(f"❌ Failed to generate persona for u/{username}")
                     return None
+                    
+                print("✅ Persona generated successfully!")
+                print("\n" + "="*50)
+                print(f"📊 PERSONA SUMMARY: u/{username}".center(50))
+                print("="*50)
             except Exception as e:
                 print(f"Error generating persona: {str(e)}")
                 import traceback
@@ -859,53 +862,56 @@ class RedditPersonaAnalyzer:
             'total_posts': total_posts
         }
         
-        # Print the detailed persona
-        self.safe_print("\n" + "="*80)
-        self.safe_print(f"DETAILED REDDIT PERSONA: u/{username}".center(80))
-        self.safe_print("="*80)
+        # Print the detailed persona with enhanced formatting
+        self.safe_print("\n" + "✨" + "="*78 + "✨")
+        self.safe_print(f"🔍  REDDIT PERSONA ANALYSIS: u/{username}".center(80))
+        self.safe_print("✨" + "="*78 + "✨\n")
         
-        # Basic Information
-        self.safe_print("\n" + "BASIC INFORMATION".center(80, '-'))
-        self.safe_print(f"Name: u/{username}")
-        self.safe_print(f"Age: {personal_info['age']}")
-        self.safe_print(f"Location: {personal_info['location']}")
-        self.safe_print(f"Occupation: {personal_info['occupation']}")
-        self.safe_print(f"Relationship Status: {personal_info['marriage_status']}")
+        # Basic Information with emojis and better formatting
+        self.safe_print("\n\U0001f4cb " + "BASIC INFORMATION".ljust(75, '\u2500'))
+        self.safe_print(f"   👤 Username: u/{username}")
+        self.safe_print(f"   🎂 Age: {personal_info['age']}")
+        self.safe_print(f"   📍 Location: {personal_info['location']}")
+        self.safe_print(f"   💼 Occupation: {personal_info['occupation']}")
+        self.safe_print(f"   💑 Relationship Status: {personal_info['marriage_status']}")
         
-        # Personality & Archetype
-        self.safe_print("\nPERSONALITY & ARCHETYPE".center(80, '-'))
-        self.safe_print(f"Archetype: {archetype}")
-        self.safe_print(f"Communication Style: {personality}")
+        # Personality & Archetype with visual indicators
+        self.safe_print("\n\U0001f9e0 " + "PERSONALITY & ARCHETYPE".ljust(75, '\u2500'))
+        self.safe_print(f"   🧩 Archetype: {archetype}")
+        self.safe_print(f"   🧠 Personality: {personality}")
+        sentiment_emoji = '😊' if compound_score > 0.1 else '😐' if compound_score > -0.1 else '😟'
+        self.safe_print(f"   {sentiment_emoji} Overall Sentiment: {abs(compound_score)*100:.1f}% {'positive' if compound_score > 0 else 'negative' if compound_score < 0 else 'neutral'}")
         
-        # Motivations
-        self.safe_print("\nMOTIVATIONS".center(80, '-'))
+        # Motivations with emojis and better formatting
+        self.safe_print("\n\U0001f4a1 " + "MOTIVATIONS".ljust(75, '\u2500'))
         for i, (motivation, source) in enumerate(motivations[:3], 1):
-            self.safe_print(f"{i}. {motivation}")
-            self.safe_print(f"   Source: {source}")
+            self.safe_print(f"   {i}. {motivation}")
+            self.safe_print(f"      📌 Source: {source}")
         
-        # Goals & Needs
-        self.safe_print("\nGOALS & NEEDS".center(80, '-'))
+        # Goals & Needs with emojis and better formatting
+        self.safe_print("\n\U0001f3af " + "GOALS & NEEDS".ljust(75, '\u2500'))
         for i, (goal, source) in enumerate(goals[:3], 1):
-            self.safe_print(f"{i}. {goal}")
-            self.safe_print(f"   Source: {source}")
+            self.safe_print(f"   {i}. {goal}")
+            self.safe_print(f"      📌 Source: {source}")
         
-        # Behavior & Habits
-        self.safe_print("\nBEHAVIOR & HABITS".center(80, '-'))
+        # Behavior & Habits with emojis and better formatting
+        self.safe_print("\n\U0001f4dd " + "BEHAVIORS & HABITS".ljust(75, '\u2500'))
         for i, (behavior, source) in enumerate(behaviors[:3], 1):
-            self.safe_print(f"{i}. {behavior}")
-            self.safe_print(f"   Source: {source}")
+            self.safe_print(f"   {i}. {behavior}")
+            self.safe_print(f"      📌 Source: {source}")
         
-        # Frustrations
-        self.safe_print("\nFRUSTRATIONS".center(80, '-'))
+        # Frustrations with emojis and better formatting
+        self.safe_print("\n\U0001f621 " + "FRUSTRATIONS".ljust(75, '\u2500'))
         for i, (frustration, source) in enumerate(frustrations[:3], 1):
-            self.safe_print(f"{i}. {frustration}")
-            self.safe_print(f"   Source: {source}")
+            self.safe_print(f"   {i}. {frustration}")
+            self.safe_print(f"      📌 Source: {source}")
         
-        # Activity Summary
-        self.safe_print("\nACTIVITY SUMMARY".center(80, '-'))
-        self.safe_print(f"Activity Level: {activity_level}")
-        self.safe_print(f"Comments: {total_comments}")
-        self.safe_print(f"Posts: {total_posts}")
+        # Activity Summary with emojis and better formatting
+        self.safe_print("\n\U0001f4ca " + "ACTIVITY SUMMARY".ljust(75, '\u2500'))
+        self.safe_print(f"   📊 Activity Level: {activity_level}")
+        self.safe_print(f"   💬 Total Comments: {total_comments:,}")
+        self.safe_print(f"   📝 Total Posts: {total_posts:,}")
+        self.safe_print(f"   📅 Total Activity: {total_comments + total_posts:,} interactions")
         
         # Most active subreddits
         if comments or posts:
@@ -913,12 +919,13 @@ class RedditPersonaAnalyzer:
                       [post['subreddit'] for post in posts]
             if all_subs:
                 common_subs = Counter(all_subs).most_common(5)
-                self.safe_print("\nMOST ACTIVE IN".center(80, '-'))
+                self.safe_print("\n🏆 " + "MOST ACTIVE COMMUNITIES".ljust(75, '─'))
                 for i, (sub, count) in enumerate(common_subs, 1):
-                    self.safe_print(f"{i}. r/{sub} ({count} interactions)")
-                
-                # Add to persona data for export
-                persona_data['top_subreddits'] = [{'subreddit': sub, 'count': count} for sub, count in common_subs]
+                    bar = '█' * min(10, int((count / common_subs[0][1]) * 10))
+                    self.safe_print(f"   {i}. r/{sub:<20} {bar} {count:,} interactions")
+                    
+                    # Add to persona data for export
+                    persona_data['top_subreddits'] = [{'subreddit': sub, 'count': count} for sub, count in common_subs]
         
         # Export to Google Sheets if requested
         if export_to_sheets and hasattr(self, 'google_sheets_service') and self.google_sheets_service:
@@ -928,65 +935,131 @@ class RedditPersonaAnalyzer:
                 
         return persona_data
 
-def export_to_csv(username, persona_data):
-    """Export persona data to a CSV file as a fallback"""
-    import csv
+def export_to_excel(username, persona_data):
+    """Export persona data to a simple text file"""
     from datetime import datetime
-    
-    filename = f"reddit_persona_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    import os
     
     try:
-        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.writer(csvfile)
+        # Create output directory if it doesn't exist
+        os.makedirs('exports', exist_ok=True)
+        
+        # Create a filename with timestamp
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"reddit_persona_{username}_{timestamp}.txt"
+        filepath = os.path.abspath(os.path.join('exports', filename))
+        
+        # Create the content string
+        content = []
+        
+        # Add title
+        content.append(f"Reddit Persona Analysis - u/{username}\n")
+        
+        # Add basic information
+        content.append("🔹 BASIC INFORMATION")
+        content.append(f"Username: u/{username}")
+        content.append(f"Age: {str(persona_data.get('age', 'N/A'))}")
+        content.append(f"Location: {str(persona_data.get('location', 'N/A'))}")
+        content.append(f"Occupation: {str(persona_data.get('occupation', 'N/A'))}")
+        content.append(f"Relationship Status: {str(persona_data.get('marriage_status', 'N/A'))}\n")
+        
+        # Add personality section
+        content.append("🧠 PERSONALITY & ARCHETYPE")
+        content.append(f"Archetype: {str(persona_data.get('archetype', 'N/A'))}")
+        content.append(f"Personality: {str(persona_data.get('personality', 'N/A'))}\n")
+        
+        # Add motivations
+        motivations = persona_data.get('motivations', [])
+        if motivations:
+            content.append("💡 MOTIVATIONS")
+            for i, (motivation, _) in enumerate(motivations, 1):
+                content.append(f"{i}. {str(motivation)}")
+            content.append("")  # Empty line
+        
+        # Add goals
+        goals = persona_data.get('goals', [])
+        if goals:
+            content.append("🎯 GOALS & NEEDS")
+            for i, (goal, _) in enumerate(goals, 1):
+                content.append(f"{i}. {str(goal)}")
+            content.append("")  # Empty line
+        
+        # Add behaviors
+        behaviors = persona_data.get('behaviors', [])
+        if behaviors:
+            content.append("📝 BEHAVIORS & HABITS")
+            for i, (behavior, _) in enumerate(behaviors, 1):
+                content.append(f"{i}. {str(behavior)}")
+            content.append("")  # Empty line
+        
+        # Add frustrations
+        frustrations = persona_data.get('frustrations', [])
+        if frustrations:
+            content.append("😡 FRUSTRATIONS")
+            for i, (frustration, _) in enumerate(frustrations, 1):
+                content.append(f"{i}. {str(frustration)}")
+            content.append("")  # Empty line
+        
+        # Add activity summary
+        content.append("📊 ACTIVITY SUMMARY")
+        content.append(f"Activity Level: {str(persona_data.get('activity_level', 'N/A'))}")
+        content.append(f"Total Comments: {str(persona_data.get('total_comments', 0))}")
+        content.append(f"Total Posts: {str(persona_data.get('total_posts', 0))}\n")
+        
+        # Add top subreddits if available
+        if 'top_subreddits' in persona_data and persona_data['top_subreddits']:
+            content.append("🏆 TOP SUBREDDITS")
+            for i, sub in enumerate(persona_data['top_subreddits'], 1):
+                if isinstance(sub, dict):
+                    sub_name = sub.get('subreddit', 'N/A')
+                    count = sub.get('count', 0)
+                    content.append(f"{i}. r/{sub_name} - {count} interactions")
+                else:
+                    content.append(f"{i}. r/{sub}")
+        
+        # Write to file
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(content))
+        
+        # Verify the file was created
+        if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+            print(f"\n✅ Text file created successfully: {filepath}")
+            try:
+                # Try to open with default text editor
+                if os.name == 'nt':  # Windows
+                    os.system(f'notepad "{filepath}"')
+                elif os.name == 'posix':  # macOS and Linux
+                    if sys.platform == 'darwin':
+                        os.system(f'open -e "{filepath}"')
+                    else:
+                        os.system(f'xdg-open "{filepath}"')
+            except Exception as e:
+                print(f"Note: Could not open file automatically: {e}")
+                print("Please open the file manually from the exports folder.")
+            return filepath
+        else:
+            raise Exception("Failed to create text file: File is empty or not created")
             
-            # Write basic info
-            writer.writerow(['Category', 'Detail'])
-            writer.writerow(['Username', username])
-            writer.writerow(['Age', persona_data.get('age', 'N/A')])
-            writer.writerow(['Location', persona_data.get('location', 'N/A')])
-            writer.writerow(['Occupation', persona_data.get('occupation', 'N/A')])
-            writer.writerow(['Relationship Status', persona_data.get('marriage_status', 'N/A')])
-            writer.writerow([])
-            
-            # Write motivations
-            writer.writerow(['MOTIVATIONS'])
-            for i, (motivation, _) in enumerate(persona_data.get('motivations', []), 1):
-                writer.writerow([f"{i}.", motivation])
-            writer.writerow([])
-            
-            # Write goals
-            writer.writerow(['GOALS'])
-            for i, (goal, _) in enumerate(persona_data.get('goals', []), 1):
-                writer.writerow([f"{i}.", goal])
-            writer.writerow([])
-            
-            # Write behaviors
-            writer.writerow(['BEHAVIORS'])
-            for i, (behavior, _) in enumerate(persona_data.get('behaviors', []), 1):
-                writer.writerow([f"{i}.", behavior])
-            writer.writerow([])
-            
-            # Write activity summary
-            writer.writerow(['ACTIVITY SUMMARY'])
-            writer.writerow(['Activity Level', persona_data.get('activity_level', 'N/A')])
-            writer.writerow(['Total Comments', persona_data.get('total_comments', 0)])
-            writer.writerow(['Total Posts', persona_data.get('total_posts', 0)])
-            
-        print(f"✅ Data exported to {filename}")
-        return True
     except Exception as e:
-        print(f"❌ Error exporting to CSV: {e}")
-        return False
+        # Clean up if file creation failed
+        if 'filepath' in locals() and os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except:
+                pass
+        print(f"Error exporting to text file: {e}")
+        raise  # Re-raise the exception to be handled by the caller
 
 def main():
     import argparse
+    from datetime import datetime
     
     # Set up argument parser
     parser = argparse.ArgumentParser(description='Analyze Reddit user personas')
     parser.add_argument('username', nargs='?', help='Reddit username or profile URL')
     parser.add_argument('--export', action='store_true', help='Export to Google Sheets')
     parser.add_argument('--spreadsheet-id', help='Google Sheets spreadsheet ID (optional)')
-    parser.add_argument('--csv', action='store_true', help='Export to CSV file')
+    parser.add_argument('--excel', action='store_true', help='Export to Excel file (default if no export specified)')
     args = parser.parse_args()
     
     # Load environment variables
@@ -1042,6 +1115,22 @@ def main():
                 continue
                 
             # Handle exports if requested
+            if args.excel or (export_to_sheets and not args.excel) or not (args.excel or export_to_sheets):
+                try:
+                    excel_file = export_to_excel(user_input, persona_data)
+                    print(f"\n Data exported to Excel: {os.path.abspath(excel_file)}")
+                except Exception as e:
+                    print(f"\n Error exporting to Excel: {str(e)}")
+                    # Fallback to basic text export if Excel fails
+                    try:
+                        os.makedirs('exports', exist_ok=True)
+                        filename = os.path.join('exports', f"reddit_persona_{user_input}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+                        with open(filename, 'w', encoding='utf-8') as f:
+                            json.dump(persona_data, f, indent=2, ensure_ascii=False)
+                        print(f" Data exported to JSON: {os.path.abspath(filename)}")
+                    except Exception as e2:
+                        print(f" Failed to export persona: {str(e2)}")
+            
             if args.export or args.spreadsheet_id:
                 print("\n" + "="*50)
                 print("EXPORT OPTIONS")

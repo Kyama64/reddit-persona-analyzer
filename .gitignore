@@ -18,36 +18,53 @@ var/
 wheels/
 *.egg-info/
 .installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
 
 # Data files
+data/
 *.csv
 *.xlsx
 *.xls
 *.db
-*.sqlite3
+*.sqlite
+*.db-journal
 
-# Environment variables
+# Environment and secrets
 .env
+.secrets
 
 # API keys and credentials
 *credentials*.json
 *secrets*.json
 *.pem
+*.key
 
-# Logs
+# Logs and outputs
 *.log
-
-# Output directories
+logs/
 output/
-data/
 results/
-*.egg
 
-# Environment variables
-.env
+# Export directory
+exports/
 
-# Google credentials
-google_credentials.json
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# System files
+.DS_Store
+Thumbs.db
 
 # Virtual Environment
 venv/
